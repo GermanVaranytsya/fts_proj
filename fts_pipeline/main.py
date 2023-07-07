@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-excel_file_path = "/Users/German_Varanytsya/Desktop/fts_project/basilhayek-drug-indications-database/drug_indications_database.xlsx"
+excel_file_path = "/Users/German_Varanytsya/Desktop/basilhayek-drug-indications-database/drug_indications_database.xlsx"
 
 db_username = 'postgres'
 db_password = 'postgres'

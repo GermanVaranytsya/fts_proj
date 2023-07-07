@@ -48,7 +48,7 @@ def index_data(es):
     # Iterate over tables and columns
     for table, column in columns:
         # Retrieve data from PostgreSQL
-        cursor.execute(f"SELECT {column} FROM {db_schema}.{table}")
+        cursor.execute(f"SELECT {column} FROM {db_schema}.{table} LIMIT 100")
         rows = cursor.fetchall()
 
         # Index data into Elasticsearch
@@ -86,7 +86,7 @@ create_index_mapping(es)
 index_data(es)
 
 # Search for a specific value ('Popov' in this example)
-search_result = search_value(es, '1_032048')
+search_result = search_value(es, '1972')
 
 # Print the search results
 for hit in search_result['hits']['hits']:
