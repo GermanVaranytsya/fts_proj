@@ -4,7 +4,6 @@ import psycopg2
 es_host = 'localhost'
 es_port = 9200
 es_index = 'my_index'
-
 db_username = 'postgres'
 db_password = 'postgres'
 db_host = 'localhost'
