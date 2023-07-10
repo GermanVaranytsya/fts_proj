@@ -1,18 +1,16 @@
 from elasticsearch import Elasticsearch
 import psycopg2
 
-# Elasticsearch connection configuration
 es_host = 'localhost'
 es_port = 9200
-es_index = 'my_index'  # Name of the Elasticsearch index where data will be stored
+es_index = 'my_index'
 
-# PostgreSQL connection configuration
 db_username = 'postgres'
 db_password = 'postgres'
 db_host = 'localhost'
 db_port = '5432'
 db_name = 'postgres'
-db_schema = 'integrated'  # Schema name
+db_schema = 'integrated'
 db_table = 'i_umls'
 
 # Function to create the Elasticsearch index mapping
@@ -31,7 +29,7 @@ def create_index_mapping(es):
 
 # Function to index data from PostgreSQL to Elasticsearch
 def index_data(es):
-    # Connect to PostgreSQL
+    Print('Connect to PostgreSQL')
     conn = psycopg2.connect(
         user=db_username,
         password=db_password,
@@ -41,17 +39,15 @@ def index_data(es):
     )
     cursor = conn.cursor()
 
-    # Retrieve table names and column names from PostgreSQL
     cursor.execute(f"SELECT table_name, column_name FROM information_schema.columns WHERE table_schema='{db_schema}' and table_name ='{db_table}'")
     columns = cursor.fetchall()
 
-    # Iterate over tables and columns
     for table, column in columns:
-        # Retrieve data from PostgreSQL
+        print('Retrieve data from PostgreSQL')
         cursor.execute(f"SELECT {column} FROM {db_schema}.{table} LIMIT 100")
         rows = cursor.fetchall()
 
-        # Index data into Elasticsearch
+        print('Index data into Elasticsearch')
         for row in rows:
             document = {
                 'table_name': table,
@@ -60,7 +56,7 @@ def index_data(es):
             }
             es.index(index=es_index, body=document)
 
-    # Close connections
+    Print('Close connections')
     cursor.close()
     conn.close()
 
@@ -76,19 +72,14 @@ def search_value(es, value):
     result = es.search(index=es_index, body=query)
     return result
 
-# Create the Elasticsearch client
 es = Elasticsearch([{'host': es_host, 'port': es_port, 'scheme': 'http'}])
 
-# Create the Elasticsearch index mapping (only needs to be done once)
 create_index_mapping(es)
 
-# Index data from PostgreSQL to Elasticsearch
 index_data(es)
 
-# Search for a specific value ('Popov' in this example)
 search_result = search_value(es, '1972')
 
-# Print the search results
 for hit in search_result['hits']['hits']:
     table_name = hit['_source']['table_name']
     column_name = hit['_source']['column_name']
